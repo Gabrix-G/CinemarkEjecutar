@@ -1,4 +1,6 @@
 const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const multer = require('multer');
 
 // Configuración de Cloudinary
 cloudinary.config({
@@ -7,4 +9,20 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-module.exports = cloudinary;
+// Configuración de almacenamiento
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'cinemark',
+    allowed_formats: ['jpg', 'jpeg', 'png'],
+    transformation: [{ width: 500, height: 750, crop: 'limit' }]
+  }
+});
+
+// Middleware para subir imágenes
+const upload = multer({ storage: storage });
+
+module.exports = {
+  cloudinary,
+  upload
+};

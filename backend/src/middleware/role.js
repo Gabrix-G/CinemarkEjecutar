@@ -19,3 +19,16 @@ exports.checkRole = (roles) => {
     next();
   };
 };
+
+// Middleware para restricción de roles
+exports.restriccionRol = (...roles) => {
+  return (req, res, next) => {
+    if (!req.usuario || !roles.includes(req.usuario.rol)) {
+      return res.status(403).json({
+        success: false,
+        message: 'No tienes permiso para realizar esta acción'
+      });
+    }
+    next();
+  };
+};

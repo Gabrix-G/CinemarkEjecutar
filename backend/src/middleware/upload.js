@@ -13,14 +13,19 @@ const storage = multer.diskStorage({
     );
   }
 });
-
-// Filtrar por tipo de archivo
+// Filtro para archivos
 const fileFilter = (req, file, cb) => {
-  // Permitir solo imágenes
-  if (file.mimetype.startsWith('image')) {
-    cb(null, true);
+  // Tipos de archivo permitidos
+  const filetypes = /jpeg|jpg|png/;
+  // Verificar extensión
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  // Verificar mimetype
+  const mimetype = filetypes.test(file.mimetype);
+
+  if (mimetype && extname) {
+    return cb(null, true);
   } else {
-    cb({ message: 'Formato de archivo no soportado' }, false);
+    cb(new Error('Error: Solo se permiten imágenes (jpeg, jpg, png)'));
   }
 };
 
@@ -28,7 +33,9 @@ const fileFilter = (req, file, cb) => {
 exports.upload = multer({
   storage: storage,
   limits: {
-    fileSize: 1024 * 1024 * 5 // 5 MB
+    fileSize: 1024 * 1024 * 5 // 5 MB maxximo
   },
   fileFilter: fileFilter
 });
+
+module.exports = upload;
